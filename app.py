@@ -8,13 +8,24 @@ from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 from src.prompt import *
 import os
+import boto3
+import json
+
 
 
 app = Flask(__name__)
 load_dotenv()
 
-PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
-OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
+def get_secret(secret_name, region="us-east-1"):
+    client = boto3.client("secretsmanager", region_name=region)
+    response = client.get_secret_value(SecretId=secret_name)
+    return json.loads(response["SecretString"])
+
+secrets = get_secret("medical-chatbot-secrets")
+
+
+PINECONE_API_KEY=secrets["PINECONE_API_KEY"]
+OPENAI_API_KEY=secrets["OPENAI_API_KEY"]
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
@@ -30,7 +41,7 @@ retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":
 
 chatModel = ChatOpenAI(
     model="meta-llama/llama-3-8b-instruct",   # free OpenRouter model
-    openai_api_key=os.getenv("OPENROUTER_API_KEY"),
+    openai_api_key=OPENAI_API_KEY,
     openai_api_base="https://openrouter.ai/api/v1"
 )
 
