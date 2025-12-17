@@ -17,10 +17,10 @@ app = Flask(__name__)
 load_dotenv()
 
 PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
-OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
+OPENROUTER_API_KEY=os.environ.get('OPENROUTER_API_KEY')
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENROUTER_API_KEY"] = OPENROUTER_API_KEY
 embeddings = download_hugging_face_embeddings()
 index_name = "medical-chatbot"
 
@@ -33,8 +33,9 @@ retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":
 
 chatModel = ChatOpenAI(
     model="meta-llama/llama-3-8b-instruct",   # free OpenRouter model
-    openai_api_key=OPENAI_API_KEY,
-    openai_api_base="https://openrouter.ai/api/v1"
+    openai_api_key=OPENROUTER_API_KEY,
+    openai_api_base="https://openrouter.ai/api/v1",
+    temperature=0.2
 )
 
 prompt = ChatPromptTemplate.from_messages(
