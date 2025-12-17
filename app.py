@@ -16,16 +16,8 @@ import json
 app = Flask(__name__)
 load_dotenv()
 
-def get_secret(secret_name, region="us-east-1"):
-    client = boto3.client("secretsmanager", region_name=region)
-    response = client.get_secret_value(SecretId=secret_name)
-    return json.loads(response["SecretString"])
-
-secrets = get_secret("medical-chatbot-secrets")
-
-
-PINECONE_API_KEY=secrets["PINECONE_API_KEY"]
-OPENAI_API_KEY=secrets["OPENAI_API_KEY"]
+PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
+OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
